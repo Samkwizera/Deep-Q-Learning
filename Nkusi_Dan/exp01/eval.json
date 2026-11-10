@@ -1,0 +1,22 @@
+{
+  "eval_episodes": 5,
+  "eval_mean": -8.2,
+  "eval_std": 1.5999999999999999,
+  "eval_rewards": [
+    -5.0,
+    -9.0,
+    -9.0,
+    -9.0,
+    -9.0
+  ],
+  "eval_lengths": [
+    3377,
+    3125,
+    3129,
+    3132,
+    3130
+  ],
+  "name": "exp01_baseline",
+  "eps_decay_fraction": 0.5,
+  "train_minutes": 20.3931756734848
+}

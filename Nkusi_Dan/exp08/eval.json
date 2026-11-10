@@ -1,0 +1,22 @@
+{
+  "eval_episodes": 5,
+  "eval_mean": -9.6,
+  "eval_std": 6.8,
+  "eval_rewards": [
+    4.0,
+    -13.0,
+    -13.0,
+    -13.0,
+    -13.0
+  ],
+  "eval_lengths": [
+    2865,
+    3268,
+    3272,
+    3275,
+    3273
+  ],
+  "name": "exp08_greedy_start",
+  "eps_decay_fraction": 0.25,
+  "train_minutes": 21.677576633294425
+}

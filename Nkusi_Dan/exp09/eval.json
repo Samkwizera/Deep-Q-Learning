@@ -1,0 +1,22 @@
+{
+  "eval_episodes": 5,
+  "eval_mean": -10.8,
+  "eval_std": 2.4,
+  "eval_rewards": [
+    -6.0,
+    -12.0,
+    -12.0,
+    -12.0,
+    -12.0
+  ],
+  "eval_lengths": [
+    3734,
+    3259,
+    3263,
+    3266,
+    3264
+  ],
+  "name": "exp09_fast_decay_low_end",
+  "eps_decay_fraction": 0.1,
+  "train_minutes": 21.817183542251588
+}
