@@ -108,7 +108,7 @@ Below is a summary. The full tables, with the observed behaviour of each run and
 | 7 | 1.0 | 0.05 | 400k | -13.8 | -5.7 |
 | 8 | 0.5 | 0.05 | 100k | -16.4 | -18.3 |
 | **9** | **0.1** | **0.01** | **50k** | **+18.5** | **+20.0** |
-| 10 | | | | | |
+| 10 | 0.01 | 0.01 | 50k | -10.6 | -3.3 |
 
 ### Nkusi Dan
 
@@ -129,7 +129,7 @@ All of Dan's runs used epsilon 0.1 to 0.01 over 50k steps.
 
 ### What we found
 
-- **A low starting epsilon was the biggest win in Samuel's runs.** His experiment 9 (epsilon 0.1 to 0.01) was the only one of his runs that learned to win consistently: +18.5 in training, +20 greedy. Every run that started at 1.0 was still losing at 500k steps. Runs that started low also began improving earlier, because in Pong the agent gets a reward at the end of every point and does not need many random actions to find one.
+- **A low starting epsilon was the biggest win in Samuel's runs.** His experiment 9 (epsilon 0.1 to 0.01) was the only one of his runs that learned to win consistently: +18.5 in training, +20 greedy. Every run that started at 1.0 was still losing at 500k steps. Going even lower (0.01 the whole time, experiment 10) was too little: it learned to return the ball but not to win points. Runs that started low also began improving earlier, because in Pong the agent gets a reward at the end of every point and does not need many random actions to find one.
 - **The learning rate has to stay small.** In Dan's runs, 0.0005 and 0.001 never left -21, even with batch size 64. 0.000025 was too slow and only started improving around 300k steps. 0.0001 was the only value that worked.
 - **A bigger batch helped the most in Dan's runs.** Batch sizes 64 and 128 started learning earlier (75k to 100k steps) and finished at +16.9 and +18.7 in training, far ahead of the batch-32 baseline. Dan's experiment 8 (batch 64) had the best greedy score of all runs, 20.2.
 - **Gamma 0.99 was best.** Lowering it to 0.95 or 0.9 hurt clearly. Raising it to 0.999 was about the same as the baseline in training but worse greedy.
