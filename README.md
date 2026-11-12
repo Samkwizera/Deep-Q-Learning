@@ -11,7 +11,7 @@ Members: Ihimbazwe Samuel, Nkusi Dan
 | `train.py` | Trains a DQN agent and saves the model, a per-episode log and a reward plot |
 | `play.py` | Loads a trained model and plays Pong greedily (on screen, or recorded to mp4) |
 | `evaluate.py` | Plays a few greedy games without a window and saves the scores to `eval.json` |
-| `dqn_model.pth` | The group's best model (currently Samuel's experiment 9) |
+| `dqn_model.pth` | The group's best model (Dan's experiment 8) |
 | `notebooks/kaggle_training.ipynb` | Samuel's notebook for running his experiments on a Kaggle GPU |
 | `notebooks/kaggle_experiments.ipynb` | Dan's notebook. It trains his 10 experiments on a Kaggle GPU and scores each model with `evaluate.py` |
 | `Ihimbazwe_Samuel/expXX/`, `Nkusi_Dan/expXX/` | One folder per run: `config.json`, `dqn_model.pth`, `log.csv`, `plot.png` (Dan's runs also have `eval.json` with the greedy scores) |
@@ -100,11 +100,11 @@ Below is a summary. The full tables, with the observed behaviour of each run and
 | Exp | ε start | ε end | ε decay | Train | Greedy |
 |---|---|---|---|---|---|
 | 1 | 1.0 | 0.05 | 100k | -13.6 | -11.3 |
-| 2 | 1.0 | 0.01 | 100k | -18.6 | -13.3 |
-| 3 | 1.0 | 0.10 | 100k | -16.2 | -17.3 |
-| 4 | 1.0 | 0.20 | 100k | -13.2 | -8.0 |
+| 2 | 1.0 | 0.01 | 100k | -18.7 | -13.3 |
+| 3 | 1.0 | 0.10 | 100k | -16.3 | -17.3 |
+| 4 | 1.0 | 0.20 | 100k | -13.3 | -8.0 |
 | 5 | 1.0 | 0.05 | 25k | -13.7 | -15.0 |
-| 6 | 1.0 | 0.05 | 250k | -16.4 | -13.0 |
+| 6 | 1.0 | 0.05 | 250k | -16.4 | -13.7 |
 | 7 | 1.0 | 0.05 | 400k | -13.8 | -5.7 |
 | 8 | 0.5 | 0.05 | 100k | -16.4 | -18.3 |
 | **9** | **0.1** | **0.01** | **50k** | **+18.5** | **+20.0** |
@@ -138,4 +138,14 @@ All of Dan's runs used epsilon 0.1 to 0.01 over 50k steps.
 
 ### Final model
 
-`dqn_model.pth` is Samuel's experiment 9: learning rate 0.0001, gamma 0.99, batch size 32, epsilon 0.1 to 0.01 over 50k steps, 500k steps in total. It scored +20 in each of its 3 greedy games. Dan's experiment 8 (the same settings with batch size 64) scored about the same, 20.2 over 5 greedy games.
+`dqn_model.pth` is Dan's experiment 8: learning rate 0.0001, gamma 0.99, batch size 64, epsilon 0.1 to 0.01 over 50k steps, 500k steps in total. It combines Samuel's best exploration setting with Dan's best batch size. Its training log and plot (episode length, steps and reward per episode) are in `Nkusi_Dan/exp08/`.
+
+To pick it we played the three strongest models greedily on the same starting seeds:
+
+| Model | Greedy games | Mean | Worst game | Stuck games |
+|---|---|---|---|---|
+| Dan's experiment 8 (batch 64) | 28 | +20.1 | +20 | 0 |
+| Samuel's experiment 9 (batch 32) | 28 | +18.9 | +15 | 0 |
+| Samuel's experiment 9 settings, seed 7, 1M steps | 8 | +16.8 | -1 | 1 |
+
+The 1M-step run is a rerun of Samuel's experiment 9 with a different seed, to check that result wasn't luck (it also learned to win, +16.6 in training). But in one greedy game it got stuck in an endless rally until the time limit cut the game at about 27,000 steps. With epsilon = 0 the agent is fully deterministic, so once it falls into a loop nothing breaks it. Dan's experiment 8 never did this and won every game 20-1 or better, so it is the one used for the demo. The rerun is kept in `Ihimbazwe_Samuel/exp09_seed7_rerun/`.

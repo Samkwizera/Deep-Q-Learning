@@ -45,4 +45,6 @@ Going all the way down to 0.01 from the start (experiment 10) was too little tho
 
 Experiment 9: learning rate 0.0001, gamma 0.99, batch size 32, epsilon 0.1 to 0.01 over 50k steps.
 
-Because experiment 9 was so far ahead of everything else, I wanted to check it wasn't just a lucky run. I trained the same settings again with a different seed (7 instead of 42) for 1M steps. It was slower (+10.5 at 500k compared to +18.5) but it also learned to win, and finished at +16.6 over the last 20 episodes with a best episode of +21. So the result holds up, and the gap in speed between the two seeds shows how much DQN runs can vary.
+Because experiment 9 was so far ahead of everything else, I wanted to check it wasn't just a lucky run. I trained the same settings again with a different seed (7 instead of 42) for 1M steps. It was slower (+10.5 at 500k compared to +18.5) but it also learned to win, and finished at +16.6 over the last 20 episodes with a best episode of +21. So the result holds up, and the gap in speed between the two seeds shows how much DQN runs can vary. The rerun is in `Ihimbazwe_Samuel/exp09_seed7_rerun/`.
+
+I didn't use the rerun as the group's final model though. Playing greedily it got stuck in an endless rally in 1 of 8 games, and with no epsilon there's nothing random to break the loop. The group's `dqn_model.pth` is Dan's experiment 8, which uses my exploration setting with batch size 64 and won every one of 28 greedy games 20-1 or better.
