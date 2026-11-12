@@ -57,7 +57,7 @@ A 500k-step run takes about 20 minutes on a Kaggle T4 GPU. On a laptop CPU it ru
 
 ```bash
 uv run python play.py                       # opens a window and plays 3 games with dqn_model.pth
-uv run python play.py --model Nkusi_Dan/exp04/dqn_model.pth --episodes 5
+uv run python play.py --model Nkusi_Dan/exp08/dqn_model.pth --episodes 5
 uv run python play.py --record              # saves mp4s to videos/ instead of opening a window
 ```
 
@@ -66,7 +66,7 @@ uv run python play.py --record              # saves mp4s to videos/ instead of o
 To score a model without opening a window (this is how Dan's `eval.json` files were made):
 
 ```bash
-uv run python evaluate.py --model Nkusi_Dan/exp04/dqn_model.pth --episodes 5 --out eval.json
+uv run python evaluate.py --model Nkusi_Dan/exp08/dqn_model.pth --episodes 5 --out eval.json
 ```
 
 ## How the agent works
@@ -89,7 +89,7 @@ uv run python evaluate.py --model Nkusi_Dan/exp04/dqn_model.pth --episodes 5 --o
 
 ## Hyperparameter experiments
 
-Both members tuned exploration: epsilon start, end and decay. Learning rate (0.0001), gamma (0.99) and batch size (32) stayed fixed, and so did everything else in the training table above. Every run was 500k steps with seed 42.
+Samuel tuned exploration (epsilon start, end and decay) with learning rate 0.0001, gamma 0.99 and batch size 32 fixed. Dan then took Samuel's best exploration setting (epsilon 0.1 to 0.01 over 50k steps) and tuned learning rate, gamma and batch size. Everything else in the training table above stayed fixed, and every run was 500k steps with seed 42.
 
 Below is a summary. The full tables, with the observed behaviour of each run and each member's analysis, are in [Ihimbazwe_Samuel_Hyperparameter_experiment_results.md](Ihimbazwe_Samuel_Hyperparameter_experiment_results.md) and [Nkusi_Dan_Hyperparameter_experiment_results.md](Nkusi_Dan_Hyperparameter_experiment_results.md).
 
@@ -112,27 +112,30 @@ Below is a summary. The full tables, with the observed behaviour of each run and
 
 ### Nkusi Dan
 
-| Exp | ε start | ε end | ε decay | Train | Greedy |
+All of Dan's runs used epsilon 0.1 to 0.01 over 50k steps.
+
+| Exp | Learning rate | Gamma | Batch size | Train | Greedy |
 |---|---|---|---|---|---|
-| 1 | 1.0 | 0.05 | 250k | -12.6 | -8.2 |
-| 2 | 1.0 | 0.05 | 50k | -19.1 | -20.2 |
-| 3 | 1.0 | 0.05 | 450k | -18.3 | -15.8 |
-| **4** | **1.0** | **0.01** | **250k** | **-5.7** | **-1.2** |
-| 5 | 1.0 | 0.20 | 250k | -15.6 | -16.8 |
-| 6 | 0.5 | 0.05 | 250k | -10.1 | -12.0 |
-| 7 | 0.1 | 0.10 | constant | -10.2 | -18.6 |
-| 8 | 0.2 | 0.01 | 125k | -11.0 | -9.6 |
-| 9 | 1.0 | 0.01 | 50k | -6.4 | -10.8 |
-| 10 | 1.0 | 0.10 | 375k | -16.9 | -19.4 |
+| 1 | 0.0001 | 0.99 | 32 | -4.1 | +13.0 |
+| 2 | 0.0005 | 0.99 | 32 | -21.0 | -21.0 |
+| 3 | 0.001 | 0.99 | 32 | -21.0 | -21.0 |
+| 4 | 0.000025 | 0.99 | 32 | -18.3 | -15.0 |
+| 5 | 0.0001 | 0.95 | 32 | -16.1 | -15.0 |
+| 6 | 0.0001 | 0.9 | 32 | -11.9 | -14.4 |
+| 7 | 0.0001 | 0.999 | 32 | -2.5 | -3.6 |
+| **8** | **0.0001** | **0.99** | **64** | **+16.9** | **+20.2** |
+| 9 | 0.0001 | 0.99 | 128 | +18.7 | +14.8 |
+| 10 | 0.0005 | 0.99 | 64 | -21.0 | -21.0 |
 
 ### What we found
 
-- **A low starting epsilon was the biggest win.** Samuel's experiment 9 (epsilon 0.1 to 0.01) was the only run that learned to win consistently: +18.5 in training, +20 greedy. Every run that started at 1.0 was still losing at 500k steps.
-- **Ending at 0.01 gave mixed results.** It produced the next two best runs by training reward, Dan's experiments 4 and 9. It also produced one of the worst, Samuel's experiment 2. Ending high (0.1 to 0.2) or decaying very slowly was usually below the baseline. Samuel's experiments 4 and 7 were exceptions.
-- **Starting with less exploration makes learning start earlier.** Runs that started at epsilon 0.1 to 0.5 began improving around 120k to 220k steps. Runs that started at 1.0 began around 200k steps or later. In Pong the agent gets a reward at the end of every point, so it does not need many random actions to find rewards.
-- **One seed is not enough to rank close runs.** Samuel's experiment 6 and Dan's experiment 1 used exactly the same settings and the same seed. They still finished at -16.4 and -12.6, because GPU training is not bit-for-bit reproducible. Differences of a few points between runs are within this noise. The gap between Samuel's experiment 9 and every other run is not.
+- **A low starting epsilon was the biggest win in Samuel's runs.** His experiment 9 (epsilon 0.1 to 0.01) was the only one of his runs that learned to win consistently: +18.5 in training, +20 greedy. Every run that started at 1.0 was still losing at 500k steps. Runs that started low also began improving earlier, because in Pong the agent gets a reward at the end of every point and does not need many random actions to find one.
+- **The learning rate has to stay small.** In Dan's runs, 0.0005 and 0.001 never left -21, even with batch size 64. 0.000025 was too slow and only started improving around 300k steps. 0.0001 was the only value that worked.
+- **A bigger batch helped the most in Dan's runs.** Batch sizes 64 and 128 started learning earlier (75k to 100k steps) and finished at +16.9 and +18.7 in training, far ahead of the batch-32 baseline. Dan's experiment 8 (batch 64) had the best greedy score of all runs, 20.2.
+- **Gamma 0.99 was best.** Lowering it to 0.95 or 0.9 hurt clearly. Raising it to 0.999 was about the same as the baseline in training but worse greedy.
+- **One seed is not enough to rank runs.** Dan's experiment 1 used exactly the same settings and seed as Samuel's experiment 9, but finished at -4.1 in training against +18.5, because GPU training is not bit-for-bit reproducible. Even large gaps between two single runs can be noise. The clearest results are the ones that repeat: the high learning rates all failing, and both big-batch runs winning.
 - **The greedy scores cover fewer games than they look.** With sticky actions off, Pong is almost deterministic, so a greedy agent often plays the same game again. In Dan's evaluations, games 2 to 5 were usually identical.
 
 ### Final model
 
-`dqn_model.pth` is Samuel's experiment 9: learning rate 0.0001, gamma 0.99, batch size 32, epsilon 0.1 to 0.01 over 50k steps, 500k steps in total. It scored +20 in each of its 3 greedy games.
+`dqn_model.pth` is Samuel's experiment 9: learning rate 0.0001, gamma 0.99, batch size 32, epsilon 0.1 to 0.01 over 50k steps, 500k steps in total. It scored +20 in each of its 3 greedy games. Dan's experiment 8 (the same settings with batch size 64) scored about the same, 20.2 over 5 greedy games.

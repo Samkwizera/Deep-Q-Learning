@@ -1,22 +1,19 @@
 {
   "eval_episodes": 5,
-  "eval_mean": -19.4,
-  "eval_std": 0.7999999999999999,
+  "eval_mean": -21.0,
+  "eval_std": 0.0,
   "eval_rewards": [
     -21.0,
-    -19.0,
-    -19.0,
-    -19.0,
-    -19.0
+    -21.0,
+    -21.0,
+    -21.0,
+    -21.0
   ],
   "eval_lengths": [
-    864,
-    1334,
-    1338,
-    1341,
-    1339
-  ],
-  "name": "exp10_slow_decay_high_end",
-  "eps_decay_fraction": 0.75,
-  "train_minutes": 19.72389626900355
+    758,
+    757,
+    761,
+    764,
+    762
+  ]
 }

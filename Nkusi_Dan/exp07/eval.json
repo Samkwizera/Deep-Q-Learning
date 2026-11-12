@@ -1,22 +1,19 @@
 {
   "eval_episodes": 5,
-  "eval_mean": -18.6,
+  "eval_mean": -3.6,
   "eval_std": 2.8,
   "eval_rewards": [
-    -13.0,
-    -20.0,
-    -20.0,
-    -20.0,
-    -20.0
+    2.0,
+    -5.0,
+    -5.0,
+    -5.0,
+    -5.0
   ],
   "eval_lengths": [
-    2548,
-    2160,
-    2164,
-    2167,
-    2165
-  ],
-  "name": "exp07_constant_eps",
-  "eps_decay_fraction": 0.5,
-  "train_minutes": 21.52074824968974
+    26994,
+    4963,
+    4967,
+    4970,
+    4968
+  ]
 }
