@@ -71,6 +71,8 @@ uv run python evaluate.py --model Nkusi_Dan/exp08/dqn_model.pth --episodes 5 --o
 
 ## How the agent works
 
+![DQN architecture: the online network on top and the training loop below](docs/architecture.png)
+
 **Environment and preprocessing:**
 - `ALE/Pong-v5` with sticky actions turned off.
 - `AtariPreprocessing`: frame skip 4, 84×84 grayscale, and up to 30 random no-ops at reset.
@@ -138,14 +140,14 @@ All of Dan's runs used epsilon 0.1 to 0.01 over 50k steps.
 
 ### Final model
 
-`dqn_model.pth` is Dan's experiment 8: learning rate 0.0001, gamma 0.99, batch size 64, epsilon 0.1 to 0.01 over 50k steps, 500k steps in total. It combines Samuel's best exploration setting with Dan's best batch size. Its training log and plot (episode length, steps and reward per episode) are in `Nkusi_Dan/exp08/`.
+`dqn_model.pth` is Samuel's experiment 9: learning rate 0.0001, gamma 0.99, batch size 32, epsilon 0.1 to 0.01 over 50k steps, 500k steps in total. It scored +20 in each of its 3 greedy games. Dan's experiment 8 (the same settings with batch size 64) scored about the same, 20.2 over 5 greedy games.
 
-To pick it we played the three strongest models greedily on the same starting seeds:
+Training curve of the final model (Samuel's experiment 9):
 
-| Model | Greedy games | Mean | Worst game | Stuck games |
-|---|---|---|---|---|
-| Dan's experiment 8 (batch 64) | 28 | +20.1 | +20 | 0 |
-| Samuel's experiment 9 (batch 32) | 28 | +18.9 | +15 | 0 |
-| Samuel's experiment 9 settings, seed 7, 1M steps | 8 | +16.8 | -1 | 1 |
+![Training reward of the final model, Samuel's experiment 9](Ihimbazwe_Samuel/exp09/plot.png)
 
-The 1M-step run is a rerun of Samuel's experiment 9 with a different seed, to check that result wasn't luck (it also learned to win, +16.6 in training). But in one greedy game it got stuck in an endless rally until the time limit cut the game at about 27,000 steps. With epsilon = 0 the agent is fully deterministic, so once it falls into a loop nothing breaks it. Dan's experiment 8 never did this and won every game 20-1 or better, so it is the one used for the demo. The rerun is kept in `Ihimbazwe_Samuel/exp09_seed7_rerun/`.
+### Gameplay video
+
+[Watch the agent play Pong](https://canva.link/7y4nyopeptulal2), or download the recording from the repo: [docs/gameplay.mp4](docs/gameplay.mp4)
+
+The video shows the final model (Samuel's experiment 9) playing one greedy game, recorded with `uv run python play.py --record --episodes 1`.
