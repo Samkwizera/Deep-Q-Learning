@@ -11,7 +11,7 @@ Members: Ihimbazwe Samuel, Nkusi Dan
 | `train.py` | Trains a DQN agent and saves the model, a per-episode log and a reward plot |
 | `play.py` | Loads a trained model and plays Pong greedily (on screen, or recorded to mp4) |
 | `evaluate.py` | Plays a few greedy games without a window and saves the scores to `eval.json` |
-| `dqn_model.pth` | The group's best model (currently Samuel's experiment 9) |
+| `dqn_model.pth` | The group's best model (Dan's experiment 8) |
 | `notebooks/kaggle_training.ipynb` | Samuel's notebook for running his experiments on a Kaggle GPU |
 | `notebooks/kaggle_experiments.ipynb` | Dan's notebook. It trains his 10 experiments on a Kaggle GPU and scores each model with `evaluate.py` |
 | `Ihimbazwe_Samuel/expXX/`, `Nkusi_Dan/expXX/` | One folder per run: `config.json`, `dqn_model.pth`, `log.csv`, `plot.png` (Dan's runs also have `eval.json` with the greedy scores) |
@@ -102,11 +102,11 @@ Below is a summary. The full tables, with the observed behaviour of each run and
 | Exp | ε start | ε end | ε decay | Train | Greedy |
 |---|---|---|---|---|---|
 | 1 | 1.0 | 0.05 | 100k | -13.6 | -11.3 |
-| 2 | 1.0 | 0.01 | 100k | -18.6 | -13.3 |
-| 3 | 1.0 | 0.10 | 100k | -16.2 | -17.3 |
-| 4 | 1.0 | 0.20 | 100k | -13.2 | -8.0 |
+| 2 | 1.0 | 0.01 | 100k | -18.7 | -13.3 |
+| 3 | 1.0 | 0.10 | 100k | -16.3 | -17.3 |
+| 4 | 1.0 | 0.20 | 100k | -13.3 | -8.0 |
 | 5 | 1.0 | 0.05 | 25k | -13.7 | -15.0 |
-| 6 | 1.0 | 0.05 | 250k | -16.4 | -13.0 |
+| 6 | 1.0 | 0.05 | 250k | -16.4 | -13.7 |
 | 7 | 1.0 | 0.05 | 400k | -13.8 | -5.7 |
 | 8 | 0.5 | 0.05 | 100k | -16.4 | -18.3 |
 | **9** | **0.1** | **0.01** | **50k** | **+18.5** | **+20.0** |
