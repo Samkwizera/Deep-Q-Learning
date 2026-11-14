@@ -1,8 +1,26 @@
 # Deep Q-Learning on Atari Pong (Group 12)
 
-A Deep Q-Network (DQN) trained from scratch on `ALE/Pong-v5` with PyTorch and Gymnasium. Each member ran 10 hyperparameter experiments, and the best model is in `dqn_model.pth`.
+## Project introduction
 
-Members: Ihimbazwe Samuel, Nkusi Dan
+A Deep Q-Network (DQN) trained from scratch on `ALE/Pong-v5` with PyTorch and Gymnasium. The network, replay buffer, epsilon-greedy exploration and training loop are all written by us in `train.py`, without any RL library. Each member ran 10 hyperparameter experiments, and the best model is in `dqn_model.pth`. Played greedily, it wins Pong about 21-0.
+
+## Group members
+
+| Member | Main work |
+|---|---|
+| Ihimbazwe Samuel | DQN training algorithm (replay buffer, epsilon-greedy, Bellman target, loss, target network), `play.py`, Kaggle training notebook, epsilon experiments |
+| Nkusi Orrie Dan | Environment and CNN architecture, learning rate / gamma / batch size experiments, `evaluate.py`, README |
+
+We worked on most parts together. The full breakdown and our meeting log are in [Task allocation sheet.pdf](Task%20allocation%20sheet.pdf).
+
+## Selected Atari environment
+
+`ALE/Pong-v5`. The agent controls the green paddle on the right and plays against the built-in computer opponent on the left. A point is scored when the ball gets past the other player's paddle, and the game ends when one side reaches 21. The reward is +1 for every point the agent wins and -1 for every point it loses, so the total reward of an episode is between -21 (lost every point) and +21 (won every point). There are 6 actions: NOOP, FIRE, RIGHT, LEFT, RIGHTFIRE and LEFTFIRE (in Pong, RIGHT and LEFT move the paddle up and down).
+
+Preprocessing:
+- Sticky actions turned off, so the chosen action is always executed.
+- `AtariPreprocessing`: frame skip 4, 84×84 grayscale, and up to 30 random no-ops at reset.
+- The last 4 frames are stacked so the network can see which way the ball is moving.
 
 ## Repository layout
 
@@ -69,25 +87,29 @@ To score a model without opening a window (this is how Dan's `eval.json` files w
 uv run python evaluate.py --model Nkusi_Dan/exp08/dqn_model.pth --episodes 5 --out eval.json
 ```
 
-## How the agent works
+## DQN architecture
 
 ![DQN architecture: the online network on top and the training loop below](docs/architecture.png)
 
-**Environment and preprocessing:**
-- `ALE/Pong-v5` with sticky actions turned off.
-- `AtariPreprocessing`: frame skip 4, 84×84 grayscale, and up to 30 random no-ops at reset.
-- The last 4 frames are stacked so the network can see which way the ball is moving.
+**Network (`QNetwork` in `train.py`):** the Nature-DQN CNN.
+- Input: 4 stacked 84×84 grayscale frames, with pixels scaled to [0, 1] inside the network.
+- Three conv layers: 32 filters 8×8 stride 4 (→ 32×20×20), 64 filters 4×4 stride 2 (→ 64×9×9), 64 filters 3×3 stride 1 (→ 64×7×7), each followed by ReLU.
+- Flatten (3136 values), a 512-unit fully connected layer with ReLU, then one output per action: 6 Q-values, one for each action.
 
-**Network:** the Nature-DQN CNN.
-- Three conv layers: 32 filters 8×8 stride 4, 64 filters 4×4 stride 2, 64 filters 3×3 stride 1.
-- A 512-unit fully connected layer, then one output per action (6 actions).
-- Pixels are scaled to [0, 1] inside the network.
+There are two copies of this network. The online network is the one being trained and picks the actions. The target network has the same architecture and is only used to compute the Bellman targets. Its weights are a copy of the online network's, refreshed every 1000 steps.
 
-**Learning:**
-- Experience replay: a uint8 buffer of 50k transitions, sampled uniformly.
-- A separate target network, synced every 1000 steps.
-- Huber loss on the Bellman target, gradient-norm clipping at 10, and the Adam optimiser.
-- Only real episode ends (`terminated`) zero out the future value. A time-limit cut (`truncated`) does not.
+## Training process
+
+Every environment step in `train.py` does the following:
+
+1. **Pick an action (epsilon-greedy).** With probability epsilon take a random action (exploration), otherwise take the action with the highest Q-value from the online network (exploitation). Epsilon decreases linearly from `--eps-start` to `--eps-end` over `--eps-decay` steps, then stays at the end value.
+2. **Act and store.** Play the action, then store `(state, action, reward, next_state, done)` in the replay buffer (50k transitions, oldest overwritten first). `done` is only true when the game really ended (`terminated`). A time-limit cut (`truncated`) doesn't count, because the game could have continued.
+3. **Sample a batch.** After the first 10k steps, every 4 steps a random batch is drawn from the buffer. Sampling randomly instead of using the last few steps in order breaks the correlation between consecutive frames, which makes training much more stable.
+4. **Predict Q-values.** The online network predicts Q(s, a) for the actions that were actually taken.
+5. **Compute the Bellman target.** The target network computes `y = r + gamma * max_a' Q_target(s', a') * (1 - done)`. If the episode ended there is no future reward, so only `r` is left. Using the frozen target network means the target doesn't move every time the online network updates.
+6. **Loss and update.** Huber loss between Q(s, a) and y, backpropagation, gradient-norm clipping at 10, then an Adam step on the online network. Huber loss acts like squared error for small errors but grows linearly for large ones, so a few bad targets don't blow up the gradients.
+7. **Sync the target network.** Every 1000 steps the online weights are copied into the target network.
+8. **Log the episode.** When a game ends, its length, the total step count, the reward and epsilon are written to `log.csv`. At the end of training the model is saved as `dqn_model.pth` and `plot.png` shows the reward and episode length curves.
 
 ## Hyperparameter experiments
 
@@ -112,7 +134,7 @@ Below is a summary. The full tables, with the observed behaviour of each run and
 | **9** | **0.1** | **0.01** | **50k** | **+18.5** | **+20.0** |
 | 10 | 0.01 | 0.01 | 50k | -10.6 | -3.3 |
 
-### Nkusi Dan
+### Nkusi Orrie Dan
 
 All of Dan's runs used epsilon 0.1 to 0.01 over 50k steps.
 
@@ -156,10 +178,10 @@ Training curve of the final model (Dan's experiment 8). The log with the length,
 
 ![Training reward of the final model, Dan's experiment 8](Nkusi_Dan/exp08/plot.png)
 
-### Gameplay video
+## Gameplay demonstration
 
 The final model (`dqn_model.pth`) playing one greedy game, winning 21-0 (the agent is the green paddle on the right):
 
 ![The final model playing Pong](docs/gameplay.gif)
 
-The full-quality recording is [docs/gameplay.mp4](docs/gameplay.mp4). Both were recorded with `uv run python play.py --record --episodes 1`.
+The full-quality recording is [docs/gameplay.mp4](docs/gameplay.mp4). Both were recorded with `uv run python play.py --record --episodes 1`. To watch it live in a window, run `uv run python play.py`.
