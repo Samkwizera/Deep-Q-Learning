@@ -43,4 +43,4 @@ Every setting was run once with one seed. My baseline (experiment 1) used exactl
 
 ## Final configuration
 
-My best configuration is experiment 8: learning rate 0.0001, gamma 0.99, batch size 64, epsilon 0.1 to 0.01 over 50k steps. Its greedy score (20.2 over 5 games) is about the same as Samuel's experiment 9 (+20 over 3 games), which is the group's current `dqn_model.pth`.
+My best configuration is experiment 8: learning rate 0.0001, gamma 0.99, batch size 64, epsilon 0.1 to 0.01 over 50k steps. It is also the group's final `dqn_model.pth`. When we played the best models greedily on the same 28 starting seeds, it won every game 20-1 or better and never got stuck, while Samuel's experiment 9 dropped to +15 in some games (mean +18.9 against +20.1).
